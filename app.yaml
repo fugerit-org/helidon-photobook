@@ -1,0 +1,37 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: helidon-photobook
+  labels:
+    app: helidon-photobook
+spec:
+  type: ClusterIP
+  selector:
+    app: helidon-photobook
+  ports:
+    - name: tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: helidon-photobook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helidon-photobook
+  template:
+    metadata:
+      labels:
+        app: helidon-photobook
+        version: v1
+    spec:
+      containers:
+      - name: helidon-photobook
+        image: helidon-photobook
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
