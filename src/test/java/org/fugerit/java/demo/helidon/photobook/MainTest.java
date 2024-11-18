@@ -45,30 +45,20 @@ class MainTest {
     }
 
     @Test
-    void testListOk() {
-        Response response = target
-                .path("/photobook-demo/api/photobook/view/list")
-                .request()
-                .get( Response.class );
-        assertEquals( response.getStatus(), Response.Status.OK.getStatusCode() );
-    }
-
-    @Test
-    void testAlbumOk() {
-        Response response = target
-                .path("/photobook-demo/api/photobook/view/images/springio23")
-                .request()
-                .get( Response.class );
-        assertEquals( response.getStatus(), Response.Status.OK.getStatusCode() );
-    }
-
-    @Test
-    void testImageOk() {
-        Response response = target
-                .path("/photobook-demo/api/photobook/view/download/springio23_1000.jpg")
-                .request()
-                .get( Response.class );
-        assertEquals( response.getStatus(), Response.Status.OK.getStatusCode() );
+    void testOk() {
+        log.info( "config : {}", config );
+        String[] urls = {
+                "/photobook-demo/api/photobook/view/list",
+                "/photobook-demo/api/photobook/view/images/springio23",
+                "/photobook-demo/api/photobook/view/download/springio23_1000.jpg"
+        };
+        for ( String url : urls ) {
+            Response response = target
+                    .path( url )
+                    .request()
+                    .get( Response.class );
+            assertEquals( response.getStatus(), Response.Status.OK.getStatusCode() );
+        }
     }
 
     @Test
