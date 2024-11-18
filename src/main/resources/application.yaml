@@ -1,3 +1,11 @@
 app:
   greeting:
     Hello
+
+server:
+  static:
+    classpath:
+      location: /META-INF/resources/
+
+
+      location=/WEB:

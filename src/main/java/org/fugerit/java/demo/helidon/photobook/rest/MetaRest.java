@@ -13,7 +13,7 @@ import java.util.Properties;
 
 @ApplicationScoped
 @Slf4j
-@Path("/api/meta")
+@Path("/photobook-demo/api/meta")
 public class MetaRest {
 
     @GET

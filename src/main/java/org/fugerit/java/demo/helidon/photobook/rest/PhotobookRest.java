@@ -18,7 +18,7 @@ import java.util.Locale;
 
 @ApplicationScoped
 @Slf4j
-@Path("/api/photobook/view")
+@Path("/photobook-demo/api/photobook/view")
 public class PhotobookRest {
 
 

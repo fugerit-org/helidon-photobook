@@ -13,6 +13,22 @@
     <artifactId>helidon-photobook</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <scm>
+        <connection>scm:git:git://github.com/fugerit-org/helidon-photobook.git</connection>
+        <developerConnection>scm:git:ssh://github.com/fugerit-org/helidon-photobook.git</developerConnection>
+        <url>https://github.com/fugerit-org/helidon-photobook.git</url>
+    </scm>
+
+    <properties>
+        <!-- front end runtime -->
+        <src.react>${project.basedir}/src/main/react</src.react>
+        <npm.build.script>build</npm.build.script>
+        <fe.dist.dir>src/main/resources/META-INF/resources/photobook-demo/home/</fe.dist.dir>
+        <exec-plugin.version>3.1.0</exec-plugin.version>
+        <antrun-plugin.version>3.1.0</antrun-plugin.version>
+        <jacoco-maven-plugin-version>0.8.12</jacoco-maven-plugin-version>
+        <buildnumber-maven-plugin-version>3.2.0</buildnumber-maven-plugin-version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -112,6 +128,149 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>${buildnumber-maven-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <shortRevisionLength>10</shortRevisionLength>
+                            <attach>true</attach>
+                            <!--make it available for jar/war classpath resource -->
+                            <addOutputDirectoryToResources>true</addOutputDirectoryToResources>
+                        </configuration>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>create-metadata</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+
+        <profile>
+
+            <id>buildreact</id>
+
+            <build>
+
+                <plugins>
+
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${antrun-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>copy front end</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target name="frontend-build">
+                                        <exec executable="bash" dir="${project.basedir}">
+                                            <arg value="${project.basedir}/src/main/script/build_npm.sh"/>
+                                            <arg value="${project.basedir}"/>
+                                        </exec>
+                                        <delete dir="${fe.dist.dir}" />
+                                        <mkdir dir="${fe.dist.dir}" />
+                                        <copy todir="${fe.dist.dir}">
+                                            <fileset dir="${src.react}/dist">
+                                                <include name="**/*.*" />
+                                            </fileset>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${antrun-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>copy front end</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <delete dir="${fe.dist.dir}" />
+                                        <mkdir dir="${fe.dist.dir}" />
+                                        <copy todir="${fe.dist.dir}">
+                                            <fileset dir="${src.react}/dist">
+                                                <include name="**/*.*" />
+                                            </fileset>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+
+            </build>
+
+        </profile>
+
+        <profile>
+            <id>sonarfugerit</id>
+            <properties>
+                <!-- sonar cloud configuration -->
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.organization>fugerit-org</sonar.organization>
+                <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+                <!-- sonar.projectKey must be added by the project -->
+            </properties>
+        </profile>
+
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>false</skipTests>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco-maven-plugin-version}</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <configuration>
+                                    <exclClassLoaders>*QuarkusClassLoader</exclClassLoaders>
+                                    <destFile>${project.build.directory}/jacoco-quarkus.exec</destFile> <!-- this is the fix -->
+                                    <append>true</append>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>generate-code-coverage-report</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
 </project>
