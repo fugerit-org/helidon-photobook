@@ -254,11 +254,6 @@
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
-                                <configuration>
-                                    <exclClassLoaders>*QuarkusClassLoader</exclClassLoaders>
-                                    <destFile>${project.build.directory}/jacoco-quarkus.exec</destFile> <!-- this is the fix -->
-                                    <append>true</append>
-                                </configuration>
                             </execution>
                             <execution>
                                 <id>generate-code-coverage-report</id>

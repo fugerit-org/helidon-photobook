@@ -1,26 +1,17 @@
 
 package org.fugerit.java.demo.helidon.photobook;
 
-import io.helidon.microprofile.testing.junit5.Configuration;
+import io.helidon.metrics.api.MetricsFactory;
+import io.helidon.microprofile.testing.junit5.HelidonTest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.metrics.Counter;
 import org.eclipse.microprofile.metrics.MetricRegistry;
-
-import io.helidon.microprofile.testing.junit5.HelidonTest;
-import io.helidon.metrics.api.MetricsFactory;
-
 import org.fugerit.java.core.cfg.ConfigRuntimeException;
 import org.fugerit.java.demo.helidon.photobook.rest.RestHelper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterAll;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.utility.MountableFile;
-
-import java.io.File;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
