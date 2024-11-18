@@ -12,6 +12,9 @@ import jakarta.ws.rs.core.MediaType;
 import io.helidon.microprofile.testing.junit5.HelidonTest;
 import io.helidon.metrics.api.MetricsFactory;
 
+import org.fugerit.java.core.cfg.ConfigRuntimeException;
+import org.fugerit.java.demo.helidon.photobook.rest.RestHelper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterAll;
 
@@ -62,36 +65,42 @@ class MainTest {
         MetricsFactory.closeAll();
     }
 
+    @Test
+    void testListOk() {
+        Response response = target
+                .path("/photobook-demo/api/photobook/view/list")
+                .request()
+                .get( Response.class );
+        assertEquals( response.getStatus(), Response.Status.OK.getStatusCode() );
+    }
 
     @Test
-    void testGreet() {
-        Message message = target
-                .path("simple-greet")
+    void testAlbumOk() {
+        Response response = target
+                .path("/photobook-demo/api/photobook/view/images/springio23")
                 .request()
-                .get(Message.class);
-        assertThat(message.getMessage(), is("Hello World!"));
+                .get( Response.class );
+        assertEquals( response.getStatus(), Response.Status.OK.getStatusCode() );
     }
-                
+
     @Test
-    void testGreetings() {
-        Message jsonMessage = target
-                .path("greet/Joe")
+    void testImageOk() {
+        Response response = target
+                .path("/photobook-demo/api/photobook/view/download/springio23_1000.jpg")
                 .request()
-                .get(Message.class);
-        assertThat(jsonMessage.getMessage(), is("Hello Joe!"));
-
-        try (Response r = target
-                .path("greet/greeting")
-                .request()
-                .put(Entity.entity("{\"greeting\" : \"Hola\"}", MediaType.APPLICATION_JSON))) {
-            assertThat(r.getStatus(), is(204));
-        }
-
-        jsonMessage = target
-                .path("greet/Jose")
-                .request()
-                .get(Message.class);
-        assertThat(jsonMessage.getMessage(), is("Hola Jose!"));
+                .get( Response.class );
+        assertEquals( response.getStatus(), Response.Status.OK.getStatusCode() );
     }
-                
+
+    @Test
+    void testRestHelper() {
+        Response res = RestHelper.defaultHandle( () -> {
+            if ( Boolean.TRUE.booleanValue() ) {
+                throw new ConfigRuntimeException( "scenario exception" );
+            }
+            return null;
+        } );
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), res.getStatus());
+    }
+
 }
